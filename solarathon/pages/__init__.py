@@ -27,9 +27,10 @@ def Page():
     with solara.Column(style={"padding-top": "30px"}):
         solara.Title("Solara Frequently Asked Question")
         # Change this with the number of the df/csv list
-        for row in qa_json: 
-            with solara.Card(title=row["question"]):
-                solara.Markdown(row["answer"])
+        with solara.ColumnsResponsive([4, 4, 4]):
+            for row in qa_json: 
+                with solara.Card(title=row["question"]):
+                    solara.Markdown(row["answer"])
 
 
 @solara.component
