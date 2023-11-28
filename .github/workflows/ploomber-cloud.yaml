@@ -53,11 +53,12 @@ jobs:
       - name: Move File step
         run: |
           # Replace "source_folder" and "destination_folder" with your actual folder names
+          git checkout master
           mv data/testing/journal_article.txt solarathon/
           git add solarathon/journal_article.txt
           git commit -m "Move file from source_folder to destination_folder"
           git branch
-          git push origin master:ploomber  # Adjust the branch name as needed
+          git push origin master  # Adjust the branch name as needed
           
 
 
