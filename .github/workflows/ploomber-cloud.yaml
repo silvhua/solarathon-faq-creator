@@ -56,7 +56,7 @@ jobs:
           mv data/testing/journal_article.txt solarathon/
           git add solarathon/journal_article.txt
           git commit -m "Move file from source_folder to destination_folder"
-          git push origin master  # Adjust the branch name as needed
+          git push origin master:ploomber  # Adjust the branch name as needed
           
 
 
