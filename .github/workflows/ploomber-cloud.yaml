@@ -56,7 +56,8 @@ jobs:
           mv solarathon-faq-creator/data/testing/journal_article.txt solarathon-faq-creator/solarathon/
           git add solarathon-faq-creator/solarathon/journal_article.txt
           git commit -m "Move file from source_folder to destination_folder"
-          git push origin main  # Adjust the branch name as needed
+          git push origin master  # Adjust the branch name as needed
+          
 
 
           
