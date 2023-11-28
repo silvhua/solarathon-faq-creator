@@ -14,7 +14,7 @@ route_order = ["/", "settings", "chat", "clickbutton"]
 
 # load csv
 def load_json(filepath):
-    HERE = Path(__file__).parent
+    HERE = Path(__file__).parent.parent
     json_file_path = (HERE / filepath)
     with open(json_file_path, encoding="utf-8-sig") as file:
         return json.load(file)
