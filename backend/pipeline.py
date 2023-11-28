@@ -10,7 +10,7 @@ from haystack.nodes import PromptNode, PromptTemplate, AnswerParser
 from haystack.nodes import EmbeddingRetriever
 import logging
 import json
-import pdb
+import pdb ##### REMOVE IN FINAL SCRIPT
 
 ##### Update if needed #####
 
@@ -96,7 +96,7 @@ delete_documents(config_filename, data_path)
 delete_documents(faiss_filename, data_path)
 
 document_store = FAISSDocumentStore( # https://docs.haystack.deepset.ai/reference/document-store-api#faissdocumentstore
-    sql_url=f"sqlite:///{data_path}{faiss_filename}",
+    sql_url=f"sqlite:///{data_path}/{faiss_filename}",
     faiss_index_factory_str="Flat"
     )
 
@@ -116,9 +116,9 @@ def run_pipeline(data_filename, data_path):
     output = p.run(file_paths=[f"{data_path if data_path else '.'}/{data_filename}"])
     print(f'Number of documents: {len(p.get_document_store().get_all_documents())}')
     print(f'Document content type: {type(p.get_document_store().get_all_documents()[0].content)}') #### SH 2023-11-24 14:17 return the p object
-    return output
+    return p, output
 
-indexing_output = run_pipeline(data_filename, data_path)
+indexing_pipeline, indexing_output = run_pipeline(data_filename, data_path)
 document_store.update_embeddings(retriever)
 document_store.save(index_path=f'{data_path}/{index_filename}', config_path=f'{data_path}/{config_filename}')
 
@@ -149,10 +149,10 @@ def run_summarization(system_message, document_store=None, retriever=None, promp
         summarize_pipeline.add_node(component=prompt_node, name="PromptNode", inputs=["Query"])
         output = summarize_pipeline.run(query=system_message, documents=document_store.get_all_documents())
     print(f"\n*Model output*: \n{output['results'][0]}")
-    return output
+    return summarize_pipeline, output
 
 
-summarization_output = run_summarization(
+summarize_pipeline, summarization_output = run_summarization(
     system_message, 
     document_store=document_store, 
     retriever=None, 
@@ -161,6 +161,9 @@ summarization_output = run_summarization(
     )
 timestamp = create_timestamp()
 save_to_json(
-    json.loads(summarization_output['results'][0].strip()), description='llm_summary_'+timestamp, path=data_path
+    json.loads(summarization_output['results'][0].strip()), description='llm_summary', append_version=True, path=data_path
     )
-pdb.set_trace()
+##### REMOVE IN FINAL SCRIPT
+pdb.set_trace() 
+print(f'Summarization pipeline keys: {summarize_pipeline.keys()}')
+print(f'Indexing pipeline keys: {indexing_pipeline.keys()}')
