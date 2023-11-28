@@ -1,3 +1,4 @@
+from data_cleaning import save_to_json
 import os
 import sys
 from datetime import datetime
@@ -8,8 +9,8 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.nodes import PromptNode, PromptTemplate, AnswerParser
 from haystack.nodes import EmbeddingRetriever
 import logging
-from data_cleaning import save_to_json
 import json
+import pdb
 
 ##### Update if needed #####
 
@@ -112,11 +113,12 @@ def run_pipeline(data_filename, data_path):
     p.add_node(component=preprocessor, name="PreProcessor", inputs=["FileConverter"])
     p.add_node(component=retriever, name="Retriever", inputs=["PreProcessor"])
     p.add_node(component=document_store, name="DocumentStore", inputs=["Retriever"])
-    p.run(file_paths=[f"{data_path if data_path else '.'}/{data_filename}"])
+    output = p.run(file_paths=[f"{data_path if data_path else '.'}/{data_filename}"])
     print(f'Number of documents: {len(p.get_document_store().get_all_documents())}')
     print(f'Document content type: {type(p.get_document_store().get_all_documents()[0].content)}') #### SH 2023-11-24 14:17 return the p object
+    return output
 
-run_pipeline(data_filename, data_path)
+indexing_output = run_pipeline(data_filename, data_path)
 document_store.update_embeddings(retriever)
 document_store.save(index_path=f'{data_path}/{index_filename}', config_path=f'{data_path}/{config_filename}')
 
@@ -150,13 +152,15 @@ def run_summarization(system_message, document_store=None, retriever=None, promp
     return output
 
 
-output = run_summarization(
+summarization_output = run_summarization(
     system_message, 
     document_store=document_store, 
     retriever=None, 
     prompt_node=prompt_node, 
     use_retriever=False
     )
+timestamp = create_timestamp()
 save_to_json(
-    json.loads(output['results'][0].strip()), description='llm_summary', path=data_path
+    json.loads(summarization_output['results'][0].strip()), description='llm_summary_'+timestamp, path=data_path
     )
+pdb.set_trace()
