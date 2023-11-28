@@ -1,4 +1,4 @@
-from data_cleaning import save_to_json
+from data_cleaning import *
 import os
 import sys
 from datetime import datetime
@@ -17,7 +17,7 @@ import pdb ##### REMOVE IN FINAL SCRIPT
 data_path = '../data'
 data_filename = 'Discord_all_messages_cleaned.json'
 top_k = 100 # Number of documents to retrieve
-max_length = 3000
+max_length = 4000
 
 system_message = """
 The following is a JSON array of objects containing a sequence of Discord messages. 
@@ -44,7 +44,8 @@ where each element is a question-answer pair. For example:
 
 ##### Update if needed #####
 embedding_model = 'sentence-transformers/all-mpnet-base-v2' # https://huggingface.co/sentence-transformers/all-mpnet-base-v2
-llm = 'gpt-3.5-turbo-16k'
+# llm = 'gpt-3.5-turbo-16k'
+llm = 'gpt-4-1106-preview'
 ###########################
 
 
@@ -70,10 +71,19 @@ def delete_documents(filename, filepath):
         print(message)
 
 logging.basicConfig(format="%(levelname)s - %(name)s -  %(message)s", level=logging.WARNING)
-logging.getLogger("haystack").setLevel(logging.INFO)
+haystack_logger = logging.getLogger("haystack")
+
+# Create a logging handler for console output
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# Add the console handler to the logger
+haystack_logger.addHandler(console_handler)
 
 openai_api_key = os.getenv('openai_api_key')
 file_converter = TextConverter() # https://docs.haystack.deepset.ai/docs/file_converters
+##### REMOVE IN FINAL SCRIPT
+pdb.set_trace() 
 
 preprocessor = PreProcessor( # https://docs.haystack.deepset.ai/docs/preprocessor
     clean_empty_lines=True,
@@ -84,7 +94,7 @@ preprocessor = PreProcessor( # https://docs.haystack.deepset.ai/docs/preprocesso
     split_length=100,
     split_respect_sentence_boundary=False,
     split_overlap=0,
-  	max_chars_check = 500000
+  	max_chars_check = 600000
 )
 
 index_filename = 'journal_article_index'
@@ -123,6 +133,7 @@ document_store.update_embeddings(retriever)
 document_store.save(index_path=f'{data_path}/{index_filename}', config_path=f'{data_path}/{config_filename}')
 
 model_name = llm
+print(f'Using model {model_name} to summarize.')
 prompt = PromptTemplate( # https://docs.haystack.deepset.ai/docs/prompt_node#prompttemplates
     prompt='{query}\n\n Messages: {join(documents)} \n\nSummary: '
 )
@@ -151,19 +162,27 @@ def run_summarization(system_message, document_store=None, retriever=None, promp
     print(f"\n*Model output*: \n{output['results'][0]}")
     return summarize_pipeline, output
 
-
-summarize_pipeline, summarization_output = run_summarization(
-    system_message, 
-    document_store=document_store, 
-    retriever=None, 
-    prompt_node=prompt_node, 
-    use_retriever=False
-    )
-timestamp = create_timestamp()
-save_to_json(
-    json.loads(summarization_output['results'][0].strip()), description='llm_summary', append_version=True, path=data_path
-    )
-##### REMOVE IN FINAL SCRIPT
-pdb.set_trace() 
+try:
+    summarize_pipeline, summarization_output = run_summarization(
+        system_message, 
+        document_store=document_store, 
+        retriever=None, 
+        prompt_node=prompt_node, 
+        use_retriever=False
+        )
+    timestamp = create_timestamp()
+    save_to_json(
+        json.loads(summarization_output['results'][0].strip()), description='llm_summary', append_version=True, path=data_path
+        )
+except Exception as error:
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    message = f'An error occurred on line {lineno} in {filename}: {error}.'
+    print(message)
+    pdb.set_trace() ##### REMOVE IN FINAL SCRIPT
 print(f'Summarization pipeline keys: {summarize_pipeline.keys()}')
 print(f'Indexing pipeline keys: {indexing_pipeline.keys()}')
+##### REMOVE IN FINAL SCRIPT
+pdb.set_trace() 
