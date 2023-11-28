@@ -7,8 +7,9 @@ import discord
 import json
 from pathlib import Path
 
-DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID'))
 BOT_TOKEN         = os.getenv('BOT_TOKEN')
+DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID'))
+
 
 class FAQCreatorBotClient(discord.Client):
     
