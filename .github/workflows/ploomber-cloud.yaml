@@ -51,7 +51,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --local user.email "action@github.com"
+          git config --local user.email "arunprasadh1996@gmail.com"
           git config -l
           git add .
           git commit -m "Move file from source_folder to destination_folder"
