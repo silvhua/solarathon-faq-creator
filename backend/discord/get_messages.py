@@ -8,7 +8,14 @@ import json
 from pathlib import Path
 
 BOT_TOKEN         = os.getenv('BOT_TOKEN')
-#DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID'))
+DISCORD_SERVER_ID = os.getenv('DISCORD_SERVER_ID')
+
+if DISCORD_SERVER_ID.isdigit():
+    DISCORD_SERVER_ID = int(DISCORD_SERVER_ID)
+else:
+    # Handle the case when the value is not a valid integer
+    print(f"The value '{value}' is not a valid integer.")
+    print(type(DISCORD_SERVER_ID))
 
 
 class FAQCreatorBotClient(discord.Client):
