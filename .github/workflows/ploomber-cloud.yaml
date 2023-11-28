@@ -47,7 +47,7 @@ jobs:
           export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
           python solarathon/pages/__init__.py
       
-      - name: Move File
+      - name: Move File step
         run: |
           # Replace "source_folder" and "destination_folder" with your actual folder names
           mv data/testing/journal_article.txt solarathon/
