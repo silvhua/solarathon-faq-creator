@@ -48,14 +48,11 @@ jobs:
         run: |
           # Replace "source_folder" and "destination_folder" with your actual folder names
           mv data/testing/journal_article.txt solarathon/
-
-      - name: Commit and Push Changes
-        run: |
-          git config --local user.email "arunprasadh1996@gmail.com"
-          git config -l
-          git add .
+          git add solarathon/journal_article.txt
           git commit -m "Move file from source_folder to destination_folder"
-          git push
+          git push origin main  # Adjust the branch name as needed
+
+
 
           
       
