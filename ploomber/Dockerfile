@@ -2,7 +2,8 @@ FROM python:3.11
 
 RUN pip install --no-cache-dir --upgrade pip
 RUN mkdir wheels
-RUN pip install solara pytextrank pandas yake python-dotenv
+RUN pip install solara pytextrank pandas yake 
+RUN pip install python-dotenv
 COPY wheels/*.whl wheels
 RUN pip install wheels/*.whl
 
