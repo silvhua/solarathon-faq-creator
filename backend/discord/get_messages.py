@@ -15,7 +15,7 @@ if DISCORD_SERVER_ID.isdigit():
 else:
     # Handle the case when the value is not a valid integer
     #print(f"The value '{value}' is not a valid integer.")
-    print(DISCORD_SERVER_ID)
+    print("DISCORD SErver id:",DISCORD_SERVER_ID)
     print(type(DISCORD_SERVER_ID))
 
 
