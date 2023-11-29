@@ -10,7 +10,7 @@ from haystack.nodes import PromptNode, PromptTemplate, AnswerParser
 from haystack.nodes import EmbeddingRetriever
 import logging
 import json
-import pdb ##### REMOVE IN FINAL SCRIPT
+# import pdb ##### REMOVE IN FINAL SCRIPT
 
 ##### Update if needed #####
 
@@ -82,8 +82,8 @@ haystack_logger.addHandler(console_handler)
 
 openai_api_key = os.getenv('openai_api_key')
 file_converter = TextConverter() # https://docs.haystack.deepset.ai/docs/file_converters
-##### REMOVE IN FINAL SCRIPT
-pdb.set_trace() 
+# ##### REMOVE IN FINAL SCRIPT
+# pdb.set_trace() 
 
 preprocessor = PreProcessor( # https://docs.haystack.deepset.ai/docs/preprocessor
     clean_empty_lines=True,
@@ -181,8 +181,8 @@ except Exception as error:
     filename = f.f_code.co_filename
     message = f'An error occurred on line {lineno} in {filename}: {error}.'
     print(message)
-    pdb.set_trace() ##### REMOVE IN FINAL SCRIPT
+    # pdb.set_trace() ##### REMOVE IN FINAL SCRIPT
 print(f'Summarization pipeline keys: {summarize_pipeline.keys()}')
 print(f'Indexing pipeline keys: {indexing_pipeline.keys()}')
-##### REMOVE IN FINAL SCRIPT
-pdb.set_trace() 
+# ##### REMOVE IN FINAL SCRIPT
+# pdb.set_trace() 
