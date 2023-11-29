@@ -15,7 +15,8 @@ import json
 ##### Update if needed #####
 
 data_path = '../data'
-data_filename = 'Discord_all_messages_cleaned.json'
+DISCORD_SERVER_ID = os.getenv('DISCORD_SERVER_ID')
+data_filename = f'{DISCORD_SERVER_ID}_messages_cleaned.json'
 top_k = 100 # Number of documents to retrieve
 max_length = 4000
 
@@ -97,8 +98,8 @@ preprocessor = PreProcessor( # https://docs.haystack.deepset.ai/docs/preprocesso
   	max_chars_check = 600000
 )
 
-index_filename = 'journal_article_index'
-config_filename = 'journal_article_config'
+index_filename = f'{DISCORD_SERVER_ID}_index'
+config_filename = f'{DISCORD_SERVER_ID}_config'
 faiss_filename = 'faiss_document_store.db'
 
 delete_documents(index_filename, data_path)
@@ -131,6 +132,8 @@ def run_pipeline(data_filename, data_path):
 indexing_pipeline, indexing_output = run_pipeline(data_filename, data_path)
 document_store.update_embeddings(retriever)
 document_store.save(index_path=f'{data_path}/{index_filename}', config_path=f'{data_path}/{config_filename}')
+# ##### REMOVE IN FINAL SCRIPT
+# pdb.set_trace() 
 
 model_name = llm
 print(f'Using model {model_name} to summarize.')
