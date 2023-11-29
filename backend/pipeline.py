@@ -177,6 +177,8 @@ try:
     save_to_json(
         json.loads(summarization_output['results'][0].strip()), description='llm_summary', append_version=True, path=data_path
         )
+    print(f'Summarization pipeline keys: {summarize_pipeline.keys()}')
+    print(f'Indexing pipeline keys: {indexing_pipeline.keys()}')
 except Exception as error:
     exc_type, exc_obj, tb = sys.exc_info()
     f = tb.tb_frame
@@ -185,7 +187,5 @@ except Exception as error:
     message = f'An error occurred on line {lineno} in {filename}: {error}.'
     print(message)
     # pdb.set_trace() ##### REMOVE IN FINAL SCRIPT
-print(f'Summarization pipeline keys: {summarize_pipeline.keys()}')
-print(f'Indexing pipeline keys: {indexing_pipeline.keys()}')
 # ##### REMOVE IN FINAL SCRIPT
 # pdb.set_trace() 
