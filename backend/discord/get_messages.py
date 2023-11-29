@@ -22,7 +22,7 @@ class FAQCreatorBotClient(discord.Client):
         text_channels = await self.find_text_channels()
         print(text_channels)
         messages = await self.fetch_messages()
-        print(messages)
+        #print(messages)
         await self.close()
         print('process complete')
 
