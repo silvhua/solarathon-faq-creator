@@ -8,7 +8,11 @@ import json
 from pathlib import Path
 
 DISCORD_SERVER_ID = int(os.getenv('DISCORD_SERVER_ID'))
+DISCORD_CHANNEL_ID = int(os.getenv('DISCORD_CHANNEL_ID'))
 BOT_TOKEN         = os.getenv('BOT_TOKEN')
+
+tmp_data_path = Path('data')
+tmp_data_path.mkdir(parents=True, exist_ok=True)
 
 class FAQCreatorBotClient(discord.Client):
     
@@ -47,7 +51,9 @@ class FAQCreatorBotClient(discord.Client):
         for c in self.text_selected_channels:
             print(f'{c.name} the current channel')
             try:
-                messages = [message async for message in c.history(limit = 100_000)]
+                #TODO uncomment for PROD
+                # messages = [message async for message in c.history(limit = 100_000)] 
+                messages = [message async for message in c.history(limit = 300)]
             except:
                 print(f'error with channel : {c.name}')
                 messages = []
@@ -80,14 +86,16 @@ class FAQCreatorBotClient(discord.Client):
                     'channel_parent_id' : m.channel.parent_id ,
                     } 
                    for m in messages])
+                
 
-        with open(f'data/private/{DISCORD_SERVER_ID}_selected_channels_messages.json', 'w') as f:
+
+        with open(tmp_data_path / f'{DISCORD_SERVER_ID}_selected_channels_messages.json', 'w') as f:
             json.dump(all_messages, f)
         return all_messages
 
 def run_client(channel_filter_list : list[int] = []):
     
-    if not Path(f'data/private/{DISCORD_SERVER_ID}_selected_channels_messages.json').exists():    
+    if not ( tmp_data_path / f'{DISCORD_SERVER_ID}_selected_channels_messages.json').exists():    
         intents = discord.Intents.default()
         intents.message_content = True
         client = FAQCreatorBotClient(intents=intents, channel_filter_list = channel_filter_list)
@@ -99,8 +107,8 @@ def run_client(channel_filter_list : list[int] = []):
 
 #* Call this function in order to get all messages from a specific Channel
 #* Parameters:
-#*  - channel_filter_list : Channel ID ( 1106593686223069309 is the "general" channel of the Solara Discord Server)
+#*  - channel_filter_list : Channel ID 
 
-# run_client(channel_filter_list = [
-#     1106593686223069309
-# ])
+run_client(channel_filter_list = [
+    DISCORD_CHANNEL_ID
+    ])
