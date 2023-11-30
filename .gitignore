@@ -9,3 +9,5 @@ data/private
 data/testing_*
 notebooks/2023-11-24 summarization testing.ipynb
 .env
+discord.env
+data/1106593685241614489_selected_channels_messages.json
