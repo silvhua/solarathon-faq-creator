@@ -1,0 +1,3 @@
+vuetifyThemes = {
+    theme: { disable: true }
+}

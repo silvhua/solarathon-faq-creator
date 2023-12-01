@@ -1,40 +1,32 @@
-import solara
-from pathlib import Path
-import json
-import duckdb
+from typing import Optional
+from solarathon.components import footer
 import os
+import json
 from collections import Counter
 
-from solarathon.components import footer
+import solara
 
 ENV = os.getenv('ENV')
 data_path = '../../' if ENV == 'LOCAL' else ''
-
-# in case you want to override the default order of the tabs
-route_order = ["/", 'category','faq']
-
-openaikey = os.getenv("OPENAI_API_KEY")
-faiss_filename = os.getenv("faiss_filename")
-DISCORD_SERVER_ID = solara.reactive("")
-DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID")
 FULL_FAQS_PATH = f'{data_path}data/full_faq.json'
 
 def import_raw_data():
-    # raw_data = Path(__file__).parent.parent
-    # with open(raw_data / 'assets' / 'full_fe_faqs.json' , 'r' ) as f:
-    #     raw = json.loads(f.read())
     data = json.loads(open(FULL_FAQS_PATH).read())
     categories = Counter([f['category'] for f in data])
     topics = set([f['topic'] for f in data])
-    # print(data[:3])
+    print(data[:3])
     print(categories)
     # print(topics)
     return data,categories,topics
 
+
+
 @solara.component
-def Page():
-    
+def Page(faq_id: Optional[str] = None, page: int = 0, page_size=100):
+
+
     data,categories,topics = solara.use_memo(import_raw_data, [])
+
 
     with solara.Column( style={"padding-top": "0px"}):
         with solara.Row(gap='24px',style = {'padding':'12px', 'background':'rgb(245,246,246)',"font-size":"14px"}):
@@ -44,7 +36,7 @@ def Page():
             with solara.Link(f"/category"):
                 solara.Text('Categories')  
             with solara.Link(f"/faq"):
-                solara.Text('All FAQs')  
+                solara.Text('All FAQs')               
                 
         with solara.Column(align='center',gap='4px'):
             solara.Text('Welcome to', style={"padding":"0px 0px 0px 0px","font-size":"22px"})
@@ -56,30 +48,10 @@ def Page():
                 with solara.Column(align='center', style={'background-color':'white', 'width':'620px','height':'60px','align-items':'center'}):
                     solara.InputText('Type a question . . .')
         
-        with solara.Column(align='center', style={ 'width':'100%' }):
-            with solara.Row(justify='start',style={ 'width':'1100px'}):
-                # text with size 18px:
-                with solara.Column():
-                    solara.Text('Tranding Categories', style={"padding":"12px 12px 12px 12px","font-size":"24px"})
-
-
+        if faq_id is None:
                     with solara.GridFixed(columns=3):
-                        for category in list(categories.keys())[:11]:
-                            with solara.Card(category):
-                                                                    
-                                    with solara.Link(f"/category/{category.replace(' ','-')}"):
-                                        solara.Text('Read more')
-                        with solara.Card('All'):                
-                                with solara.Link(f"/category"):
-                                    solara.Text('See all categories')   
 
-                    solara.Markdown("""
-                                    Look for specific questions or problems in the Help Center above.\n
-                                    Alternatively, explore these tips on how to troubleshoot ad issues and optimize your campaigns
-                                    """, style={"padding":"12px 12px 12px 12px","font-size":"16px"})
-
-                    with solara.GridFixed(columns=3):
-                        for faq in data[:9]:
+                        for faq in data:
                             title = faq['question'] if len(faq['question'])<60 else faq['question'][:60] + '...'
                             answer = faq['answer'] if len(faq['answer'])<350 else faq['answer'][:350] + '...'
                             with solara.Card(title, classes=['faqcard']):
@@ -97,17 +69,21 @@ def Page():
                                         with solara.Row(justify='end'):
                                             with solara.Link(f"/faq/{faq['id']}"):
                                                 solara.Button('Read more', classes=['faqbutton'])
-        footer.Footer()        
-
-@solara.component
-def Layout(children):
-    # duckdb.query(f"""
-    #             INSTALL sqlite;LOAD sqlite; ATTACH '{data_path}solarathon/assets/{faiss_filename}' (TYPE SQLITE);
-    #             """)
-    # this is the default layout, but you can override it here, for instance some extra padding
-    return solara.AppLayout(
-                    children=children, 
-                    navigation=False,
-                    style={"padding": "0px"}
-                    # style={"background-color": "red"}
-                    )
+        else:
+            print(faq_id)
+            faq = [faq for faq in data if faq['id']==int(faq_id)][0]
+            print(faq)
+            print(data[0])
+            
+            with solara.ColumnsResponsive([8,4]):
+                
+                with solara.Column(style={'height':'1000px'}):
+                            solara.Text(faq['question'], style={"padding":"24px 24px 24px 24px","font-size":"24px"})
+                            solara.Text(faq['answer'], style={"padding":"24px 24px 24px 24px","font-size":"20px"})
+                with solara.Column():
+                    pass
+                        # with solara.GridFixed(columns=3):
+                        #     for cat in data[:9]:
+                                
+            
+        footer.Footer()  
