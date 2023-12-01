@@ -3,14 +3,8 @@ import json
 import os
 from pathlib import Path
 
-
-# Declare reactive variables at the top level. Components using these variables
-# will be re-executed when their values change.
-sentence = solara.reactive("Solara makes our team more productive.")
-word_limit = solara.reactive(10)
-
 # in case you want to override the default order of the tabs
-route_order = ["/", "settings", "chat", "clickbutton"]
+route_order = ["/", "category"]
 
 # load csv
 def load_json(filepath):
@@ -21,17 +15,18 @@ def load_json(filepath):
 
 filepath = 'input_test.json'
 qa_json= load_json(filepath)
+unique_category = set(row["category"] for row in qa_json)
 
 @solara.component
 def Page():
     with solara.Column(style={"padding-top": "30px"}):
         solara.Title("Solara Frequently Asked Question")
-        # Change this with the number of the df/csv list
         with solara.ColumnsResponsive([4, 4, 4]):
-            for row in qa_json: 
-                with solara.Card(title=row["question"]):
-                    solara.Markdown(row["answer"])
-
+            for category in unique_category :
+                pathname = f"/category/{category.lower()}"
+                with solara.Card(title=category):
+                    with solara.Link(solara.resolve_path(pathname)):
+                        solara.Button(label=f"Go to: {category}")
 
 @solara.component
 def Layout(children):
