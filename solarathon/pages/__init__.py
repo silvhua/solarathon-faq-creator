@@ -57,9 +57,9 @@ def Page():
 
 @solara.component
 def Layout(children):
-    duckdb.query(f"""
-                INSTALL sqlite;LOAD sqlite; ATTACH '{data_path}solarathon/assets/{faiss_filename}' (TYPE SQLITE);
-                """)
+    # duckdb.query(f"""
+    #             INSTALL sqlite;LOAD sqlite; ATTACH '{data_path}solarathon/assets/{faiss_filename}' (TYPE SQLITE);
+    #             """)
     # this is the default layout, but you can override it here, for instance some extra padding
     return solara.AppLayout(
                     children=children, 
