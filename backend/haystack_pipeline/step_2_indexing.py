@@ -1,3 +1,5 @@
+#%% []
+
 #!pip install discord.py farm-haystack[faiss] python-dotenv farm-haystack[inference] farm-haystack[preprocessing]
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,30 +13,35 @@ import logging
 import json
 from haystack.nodes import  JsonConverter
 
+ENV = os.getenv('ENV')
+data_path = '../../' if ENV == 'LOCAL' else ''
+
 #* Refactor Discord Messages JSON file
 DISCORD_SERVER_ID = os.getenv('DISCORD_SERVER_ID')
-DISCORD_MESSAGES_PATH_JSON = f'data/{DISCORD_SERVER_ID}_selected_channels_messages.json'
-DISCORD_MESSAGES_PATH_JSON_FORMATTED = f'data/filtered_{DISCORD_SERVER_ID}_selected_channels_messages.json'
-FULL_FAQS_PATH = 'data/full_faq.json'
-FAQS_PATH_JSON_FORMATTED = f'solarathon/assets/full_fe_faqs.json'
+DISCORD_MESSAGES_PATH_JSON = f'{data_path}{data_path}data/{DISCORD_SERVER_ID}_selected_channels_messages.json'
+DISCORD_MESSAGES_PATH_JSON_FORMATTED = f'{data_path}data/filtered_{DISCORD_SERVER_ID}_selected_channels_messages.json'
+FULL_FAQS_PATH = f'{data_path}data/full_faq.json'
+FAQS_PATH_JSON_FORMATTED = f'{data_path}solarathon/assets/full_fe_faqs.json'
+
+index_filename = f'{DISCORD_SERVER_ID}_index.faiss'
+config_filename = f'{DISCORD_SERVER_ID}_config.json'
+faiss_filename = 'faiss_document_store.db'
 
 with open(FULL_FAQS_PATH, 'r') as f:
     data = json.loads(f.read())
+#%% []
 
 faqs = [
     {  
-     'id' : id, 
-     'content' : f"""
-                    Question : 
-                    {faq['question']} ;
-                    Answer :
-                    {faq['answer']}
-                  """,
+     'id' : faq['id'], 
+     'content' : '{"Question" : "' + faq["question"] + '", "Answer" :"' +faq["answer"]+ '"}',
      'content_type' : 'text',
      'integrations' : faq['integrations'] if faq['integrations'] else [], 
      'topic' : faq['topic'] if faq['topic'] else '' , 
-     'category' : faq['category'] if faq['category'] else ''
-     } for id, faq in enumerate(data)
+     'category' : faq['category'] if faq['category'] else '',
+     'question' : faq['question'],
+     'answer' : faq['answer'],
+     } for faq in data
 ]
 with open(FAQS_PATH_JSON_FORMATTED, 'w') as f:
     json.dump(faqs, f)
@@ -54,13 +61,12 @@ console_handler.setLevel(logging.DEBUG)
 # Add the console handler to the logger
 haystack_logger.addHandler(console_handler)
 
-index_filename = f'{DISCORD_SERVER_ID}_index.faiss'
-config_filename = f'{DISCORD_SERVER_ID}_config.json'
-faiss_filename = 'faiss_document_store.db'
 
+
+#%% []
 
 document_store = FAISSDocumentStore( # https://docs.haystack.deepset.ai/reference/document-store-api#faissdocumentstore
-    sql_url=f"sqlite:///solarathon/assets/{faiss_filename}",
+    sql_url=f"sqlite:///{data_path}solarathon/assets/{faiss_filename}",
     faiss_index_factory_str="Flat"
     )
 
@@ -92,6 +98,39 @@ indexing_pipeline.add_node(component=document_store, name="DocumentStore", input
 indexing_pipeline.run(file_paths=[FAQS_PATH_JSON_FORMATTED])
 
 document_store.save(
-    index_path  = f'solarathon/assets/{index_filename}', 
-    config_path = f'solarathon/assets/{config_filename}'
+    index_path  = f'{data_path}solarathon/assets/{index_filename}', 
+    config_path = f'{data_path}solarathon/assets/{config_filename}'
     )
+
+# %%
+# import duckdb
+
+# duckdb.query(f"""
+#              INSTALL sqlite;LOAD sqlite; ATTACH '{data_path}solarathon/assets/{faiss_filename}' (TYPE SQLITE);
+#              """)
+
+# #%% []
+# duckdb.query('SHOW TABLES')
+# # %%
+# dm = json.loads(
+# duckdb.query('SELECT content from faiss_document_store.document WHERE id == 22').df().values[0][0]
+# )
+# # %%
+# dm
+# # %%
+# data = duckdb.query('SELECT content from faiss_document_store.document').df()
+
+# %%
+import pandas as pd
+import sqlite3
+
+# Read sqlite query results into a pandas DataFrame
+con = sqlite3.connect(f'{data_path}solarathon/assets/{faiss_filename}')
+df = pd.read_sql_query("SELECT * from document", con)
+df
+#%% []
+import json
+data = json.loads(open(FULL_FAQS_PATH).read())
+# %%
+data
+# %%
