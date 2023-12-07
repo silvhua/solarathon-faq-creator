@@ -16,3 +16,4 @@ dist
 !solarathon/**/*.faiss
 solarathon/assets/**.json
 solarathon/assets/**.db
+solarathon/assets/**.faiss
