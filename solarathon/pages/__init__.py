@@ -1,47 +1,60 @@
 import solara
+from solarathon.core.import_data import import_raw_data
+from solarathon.ui_utils import cat2path
+from solarathon.components import header, footer, input_search, faq_card,general
 
-# Declare reactive variables at the top level. Components using these variables
-# will be re-executed when their values change.
-sentence = solara.reactive("Solara makes our team more productive.")
-word_limit = solara.reactive(10)
-
-
-# in case you want to override the default order of the tabs
-route_order = ["/", "settings", "chat", "clickbutton"]
-
-import os
-openaikey = solara.reactive("")
-openaikey = os.getenv("OPENAI_API_KEY")
-DISCORD_SERVER_ID = solara.reactive("")
-DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID")
+route_order = ["/", 'category','faq']
 
 @solara.component
 def Page():
-    with solara.Column(style={"padding-top": "30px"}):
-        solara.Title("Solarathon example project")
-        # Calculate word_count within the component to ensure re-execution when reactive variables change.
-        word_count = len(sentence.value.split())
 
-        solara.SliderInt("Word limit", value=word_limit, min=2, max=20)
-        solara.InputText(label="Your sentence", value=sentence, continuous_update=True)
+    data,categories,topics = solara.use_memo(import_raw_data, [])
 
-        # Display messages based on the current word count and word limit.
-        if word_count >= int(word_limit.value):
-            solara.Error(f"With {word_count} words, you passed the word limit of {word_limit.value}.")
-        elif word_count >= int(0.8 * word_limit.value):
-            solara.Warning(f"With {word_count} words, you are close to the word limit of {word_limit.value}.")
-        else:
-            solara.Success("Great short writing!")
+    with solara.Column( style={"padding-top": "0px"}):
+        #** Header Bar
+        header.Header()
+        #** Texts
+        general.main_text()
+        #** Search Bar Block
+        input_search.RetrieverInputBar(placeholder=True)
         
-        solara.Markdown(f"openai key {openaikey}")
-        solara.Markdown(f"discord server id {DISCORD_SERVER_ID}")
-        solara.Markdown("*First exercise*: remove this text and write your own sentence.")
-        solara.Markdown(f"""`Food`       
-        [Biriyani](https://en.wikipedia.org/wiki/Biryani)""")
+        with solara.Column(align='center', style={ 'width':'100%' }):
+            with solara.Row(justify='start',style={ 'width':'1100px'}):
+                #** Main Home Page Content Block
+                with solara.Column():
+                    
+                    #** Categories Block
+                    solara.Text('Tranding Categories', style={"padding":"12px 12px 12px 12px","font-size":"24px"})
+                    with solara.GridFixed(columns=3):
+                        for category in list(categories.keys())[:11]:
+                            with solara.Card(category):
+                                                                    
+                                    with solara.Link(f"/category/{cat2path(category)}"):
+                                        solara.Text('Read more')
+                                        
+                        with solara.Card('All'):                
+                                with solara.Link(f"/category"):
+                                    solara.Text('See all categories')   
 
-
+                    #** Few FAQs Block
+                    solara.Markdown("""
+                                    Look for specific questions or problems in the Help Center above.\n
+                                    Alternatively, explore these tips on how to troubleshoot issues and optimize your campaigns
+                                    """, style={"padding":"12px 12px 12px 12px","font-size":"16px"})
+                    with solara.GridFixed(columns=3, row_gap = '24px'):
+                        # print(data[2])
+                        for faq in data[:9]:
+                            faq_card.FaqCard(faq)
+        footer.Footer()        
 
 @solara.component
 def Layout(children):
+    # duckdb.query(f"""
+    #             INSTALL sqlite;LOAD sqlite; ATTACH '{data_path}solarathon/assets/{faiss_filename}' (TYPE SQLITE);
+    #             """)
     # this is the default layout, but you can override it here, for instance some extra padding
-    return solara.AppLayout(children=children, style={"padding": "20px"})
+    return solara.AppLayout(
+                    children=children, 
+                    navigation=False,
+                    style={"padding": "0px"}
+                    )

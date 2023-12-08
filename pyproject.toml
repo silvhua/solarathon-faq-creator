@@ -7,7 +7,11 @@ name = "solarathon"
 description = "Template project for Solarathon 2023"
 version = "0.0.1"
 dependencies = [
-    "solara==1.23.0",
+    "solara==1.24.0",
+"farm-haystack[faiss]",
+"farm-haystack[inference]", 
+"farm-haystack[preprocessing]",
+"python-dotenv"
 ]
 
 [project.optional-dependencies]
@@ -19,4 +23,7 @@ dev = [
 include = [
   "**/*.css",
   "**/*.py",
+  "**/*.json",
+  "**/*.faiss",
+  "**/*.db",
 ]

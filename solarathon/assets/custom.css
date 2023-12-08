@@ -1,10 +1,25 @@
 /* Example of how to change the color of the label in a v-input */
 
 .v-input label.v-label {
-    color: pink;
+    color:black;
  }
 
  /* workaround for an issue in solara */
  .solara-autorouter-content {
     height: 100%;
+ }
+
+ * {
+   font-family: Tahoma !important;
+ }
+
+ .faqcard {
+   /* Add shadows to create the "faqcard" effect */
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2) !important;
+   transition: 0.3s !important;
+   padding: 12px !important;
+   border-radius: 16px !important; 
+   border-color: rgba(0,0,0,0.2) !important; 
+   border-style: solid !important;
+   border-width: 1px;
  }

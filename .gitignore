@@ -1,0 +1,19 @@
+# developer specific ignores should go to ~/.gitignore like editor specific files
+.DS_Store
+__pycache__
+**/*.pyc
+dist/
+build/
+ploomber/wheels
+data/private
+data/testing_*
+notebooks/2023-11-24 summarization testing.ipynb
+.env
+discord.env
+data
+dist
+*.faiss
+!solarathon/**/*.faiss
+solarathon/assets/**.json
+solarathon/assets/**.db
+solarathon/assets/**.faiss
