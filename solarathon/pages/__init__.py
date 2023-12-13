@@ -19,7 +19,7 @@ def Page():
         input_search.RetrieverInputBar(placeholder=True)
         
         with solara.Column(align='center', style={ 'width':'100%' }):
-            with solara.Row(justify='start',style={ 'width':'1100px'}):
+            with solara.Row(justify='center',style={ 'width':'1100px'}):
                 #** Main Home Page Content Block
                 with solara.Column():
                     

@@ -10,6 +10,14 @@ The application performs the following steps:
 	* The user can also enter a query which returns the most relevant question-answer pairs. This is done using `Haystack`, which retrieves documents based on cosine similarity.
 4. Deploy the application to the web using `Ploomber` Cloud.
 
+<details>
+<summary>Overview </summary>
+
+![plot](./workflow.png)
+
+</details>
+
+
 This project was created as part of the 2023 Solarathon.
 
 # How to Implement the Code
