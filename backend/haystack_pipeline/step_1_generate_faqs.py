@@ -59,8 +59,8 @@ p.add_node(component=preprocessor, name="PreProcessor", inputs=["FileConverter"]
 
 message_documents = p.run(file_paths = [DISCORD_MESSAGES_PATH_JSON_FORMATTED])
 
-llm = 'gpt-3.5-turbo-16k'
-# llm = 'gpt-4-0613'
+# llm = 'gpt-3.5-turbo-16k'
+llm = 'gpt-4-0613'
 max_length = 3000
 
 # Initalize the node
@@ -69,7 +69,9 @@ prompt_template = PromptTemplate("""
                    Your goal is to identify the main questions and problems that users have.
                    Your goal is to identify the different conversations between the messages.
                    The messages in the context below are related to the following theme:
-                   {discord_abouts}
+                   
+                   """ + DISCORD_ABOUTS + """ 
+                   
                    The following context contains some messages.
                    The given context is a list of JSON messages.
                    
@@ -128,14 +130,13 @@ def run_pipeline(docs):
                             }
                         ] 
                     Do not deviate from the specified JSON array format.""", 
-                    documents=docs,
-                    discord_abouts = DISCORD_ABOUTS
+                    documents=docs
                     )
     return pipe,  output
 
 full_docs = []
 DOCUMENTS = message_documents['documents']
-for i in range(0, len(DOCUMENTS), 80) :
+for i in range(80, len(DOCUMENTS), 80) :
     try:
         pipe , out = run_pipeline(DOCUMENTS[i:(i+80)])
         # print(out['results'][0])
@@ -143,8 +144,8 @@ for i in range(0, len(DOCUMENTS), 80) :
         with open(f'data/faq_{i}.json', 'w') as f:
             json.dump(out['results'][0], f)
             print(f'PROCESSED - Chunck messages from {i} to {i+80}')
-    except:
-        print(f'SKIPPED - Chunck messages from {i} to {i+80}')
+    except Exception as e:
+        print(f'SKIPPED - Chunck messages from {i} to {i+80} {e}')
 
 from pathlib import Path
 full_json_docs = []

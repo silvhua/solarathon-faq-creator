@@ -32,15 +32,18 @@ def FaqCard(faq):
         
         with solara.Row(style = {'padding':'12px'}):
             solara.Markdown(f"""
-                            ##{title}
+                            ###{title}
                             """)
             
         with solara.Column(classes = ['faqcontainer']):
                                      
-            with solara.Column(style={'width':'100%', 'height':'250px'}):                                 
+            with solara.Column(style={'width':'100%', 'height':'280px'}):                                 
                 solara.Markdown(answer.replace("```", "```\n") , unsafe_solara_execute = True)
             
             with solara.Column(style={'width':'100%','align-self':'flex-end'}):
+                with solara.Row(justify='end',style={'margin-bottom':'12px'}):
+                    with rv.Chip(color='orange', text_color='white', light=True, small=True):
+                        solara.Text(faq['category'])
                 with solara.Row(justify='end',style={'margin-bottom':'12px'}):
                     for integration in faq['integrations']:
                         with rv.Chip(color='blue', text_color='white', light=True, small=True):

@@ -18,6 +18,7 @@ faiss_filename = 'faiss_document_store.db'
 
 def import_raw_data():
     data       = json.loads(open(FULL_FAQS_PATH).read())
+       
     categories = Counter([f['category'] for f in data])
     topics     = set([f['topic'] for f in data])
     return data,categories,topics

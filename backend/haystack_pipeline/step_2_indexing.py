@@ -25,14 +25,14 @@ if os.getenv('run_locally') == '1':
 DISCORD_MESSAGES_PATH_JSON = f'{data_path}{DISCORD_SERVER_ID}_selected_channels_messages.json'
 DISCORD_MESSAGES_PATH_JSON_FORMATTED = f'{data_path}filtered_{DISCORD_SERVER_ID}_selected_channels_messages.json'
 FULL_FAQS_PATH = f'{assets_path}full_faq.json'
-FAQS_PATH_JSON_FORMATTED = f'{assets_path}full_fe_faqs.json'
+FAQS_PATH_JSON_FORMATTED = f'{data_path}full_fe_faqs.json'
 
 with open(FULL_FAQS_PATH, 'r') as f:
     data = json.loads(f.read())
 
 faqs = [
     {  
-     'id' : id, 
+     'id' : faq['id'], 
      'content' : f"""
                     Question : 
                     {faq['question']} ;
@@ -43,7 +43,7 @@ faqs = [
      'integrations' : faq['integrations'] if faq['integrations'] else [], 
      'topic' : faq['topic'] if faq['topic'] else '' , 
      'category' : faq['category'] if faq['category'] else ''
-     } for id, faq in enumerate(data)
+     } for _, faq in enumerate(data)
 ]
 with open(FAQS_PATH_JSON_FORMATTED, 'w') as f:
     json.dump(faqs, f)
