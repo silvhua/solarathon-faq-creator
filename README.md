@@ -1,5 +1,5 @@
 # Solarathon FAQ Creator
-This application automatically creates and update an FAQ based on messages for a given Discord server. When deployed via GitHub Actions and Ploomber Cloud, you have a pipeline that regenerates the FAQ at a frequency determined by the GitHub Actions settings.
+This application automatically creates an FAQ based on messages for a given Discord server. When deployed via GitHub Actions and Ploomber Cloud, you have a pipeline that regenerates the FAQ for each commit on the ploomber_dev branch.
 
 
 The application performs the following steps:
