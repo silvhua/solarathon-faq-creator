@@ -12,6 +12,7 @@ from haystack.nodes import  JsonConverter
 
 #* Refactor Discord Messages JSON file
 DISCORD_SERVER_ID = os.getenv('DISCORD_SERVER_ID')
+DISCORD_ABOUTS = os.getenv('DISCORD_ABOUTS')
 DISCORD_MESSAGES_PATH_JSON = f'data/{DISCORD_SERVER_ID}_selected_channels_messages.json'
 DISCORD_MESSAGES_PATH_JSON_FORMATTED = f'data/filtered_{DISCORD_SERVER_ID}_selected_channels_messages.json'
 
@@ -58,17 +59,18 @@ p.add_node(component=preprocessor, name="PreProcessor", inputs=["FileConverter"]
 
 message_documents = p.run(file_paths = [DISCORD_MESSAGES_PATH_JSON_FORMATTED])
 
-# llm = 'gpt-3.5-turbo-16k'
-llm = 'gpt-4-0613'
+llm = 'gpt-3.5-turbo-16k'
+# llm = 'gpt-4-0613'
 max_length = 3000
 
 # Initalize the node
 prompt_template = PromptTemplate("""
                    You are a really smart conversation analyzer that generate Frequently Asked Questions document from users messages.
-                   Your goal is to identify the main questions and problems that users have with the Solara.
-                   Solara is a new and fantastic framework for development of web app using python.
-                   The following context contains some messages.
+                   Your goal is to identify the main questions and problems that users have.
                    Your goal is to identify the different conversations between the messages.
+                   The messages in the context below are related to the following theme:
+                   {discord_abouts}
+                   The following context contains some messages.
                    The given context is a list of JSON messages.
                    
                    Some attributes are given:
@@ -126,7 +128,8 @@ def run_pipeline(docs):
                             }
                         ] 
                     Do not deviate from the specified JSON array format.""", 
-                    documents=docs
+                    documents=docs,
+                    discord_abouts = DISCORD_ABOUTS
                     )
     return pipe,  output
 
