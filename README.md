@@ -10,6 +10,10 @@ The application performs the following steps:
 	* The user can also enter a query which returns the most relevant question-answer pairs. This is done using `Haystack`, which retrieves documents based on cosine similarity.
 4. Deploy the application to the web using `Ploomber` Cloud.
 
+
+https://github.com/silvhua/solarathon-faq-creator/assets/111714881/256f08cc-ba10-40b1-85ea-f215aea1530f
+
+
 <details>
 <summary>Overview </summary>
 
